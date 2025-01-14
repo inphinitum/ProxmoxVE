@@ -19,10 +19,6 @@ header_info
 echo -e "\n Loading..."
 GEN_MAC=02:$(openssl rand -hex 5 | awk '{print toupper($0)}' | sed 's/\(..\)/\1:/g; s/.$//')
 NEXTID=$(pvesh get /cluster/nextid)
-VERSIONS=(stable beta dev)
-for version in "${VERSIONS[@]}"; do
-  eval "$version=$(curl -s https://raw.githubusercontent.com/home-assistant/version/master/$version.json | grep "ova" | cut -d '"' -f 4)"
-done
 YW=$(echo "\033[33m")
 BL=$(echo "\033[36m")
 HA=$(echo "\033[1;34m")
@@ -66,7 +62,7 @@ function cleanup() {
 
 TEMP_DIR=$(mktemp -d)
 pushd $TEMP_DIR >/dev/null
-if whiptail --backtitle "Proxmox VE Helper Scripts" --title "HOME ASSISTANT OS VM" --yesno "This will create a New Home Assistant OS VM. Proceed?" 10 58; then
+if whiptail --backtitle "Proxmox VE Helper Scripts" --title "ROON OPTIMIZED CORE KIT OS VM" --yesno "This will create a New Roon Optimizec Core Kit VM. Proceed?" 10 58; then
   :
 else
   header_info && echo -e "⚠ User exited script \n" && exit
@@ -408,6 +404,7 @@ FILE=$(basename $URL)
 msg_ok "Downloaded ${CL}${BL}roonbox-linuxx64-nuc4-usb-factoryreset.img.gz${CL}"
 msg_info "Extracting and converting to KVM Disk Image"
 gunzip $FILE
+qemu-img convert -f raw -O qcow2 $FILE ${FILE%.img}.qcow2
 STORAGE_TYPE=$(pvesm status -storage $STORAGE | awk 'NR>1 {print $2}')
 case $STORAGE_TYPE in
 nfs | dir)
