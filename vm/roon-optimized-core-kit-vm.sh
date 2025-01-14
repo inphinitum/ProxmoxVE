@@ -405,9 +405,9 @@ msg_ok "Downloaded ${CL}${BL}roonbox-linuxx64-nuc4-usb-factoryreset.img.gz${CL}"
 msg_info "Extracting and converting to KVM Disk Image"
 gunzip $FILE
 FILE=${FILE%.gz}
-qemu-img convert -f raw -O qcow2 ${FILE} ${FILE%.img}.qcow2
-rm {FILE}
-FILE={FILE%.img}.qcow2
+qemu-img convert -f raw -O qcow2 $FILE ${FILE%.img}.qcow2
+rm $FILE
+FILE=${FILE%.img}.qcow2
 STORAGE_TYPE=$(pvesm status -storage $STORAGE | awk 'NR>1 {print $2}')
 case $STORAGE_TYPE in
 nfs | dir)
