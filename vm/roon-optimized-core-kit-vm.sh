@@ -447,9 +447,8 @@ pvesm alloc $STORAGE $VMID $DISK0 4M 1>&/dev/null
 qm set $VMID \
   -efidisk0 ${DISK0_REF}${FORMAT} \
   -scsi0 ${DISK1_REF},${DISK_CACHE}${THIN}size=32G \
-  -usb0 host=bus=1,port=2 \
-  -scsi1 ${STORAGE}:${VMID}/$FILE,media=cdrom \
-  -boot order=usb0 \
+  --ide2 $FILE,media=cdrom \
+  -boot order=ide2 \
   -description "<div align='center'><a href='https://Helper-Scripts.com' target='_blank' rel='noopener noreferrer'><img src='https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/images/logo-81x112.png'/></a>
 
   # Roon Optimized Core Kit
