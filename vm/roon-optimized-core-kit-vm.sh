@@ -405,9 +405,13 @@ msg_ok "Downloaded ${CL}${BL}roonbox-linuxx64-nuc4-usb-factoryreset.img.gz${CL}"
 msg_info "Extracting and converting to KVM Disk Image"
 gunzip $FILE
 FILE=${FILE%.gz}
+
+# TODO: Maybe not needed
 qemu-img convert -f raw -O qcow2 $FILE ${FILE%.img}.qcow2
 rm $FILE
 FILE=${FILE%.img}.qcow2
+
+# Determine storage type and set disk extension
 STORAGE_TYPE=$(pvesm status -storage $STORAGE | awk 'NR>1 {print $2}')
 case $STORAGE_TYPE in
 nfs | dir)
@@ -424,15 +428,19 @@ btrfs | local-zfs)
   THIN=""
   ;;
 esac
+
+# Set disk references
 for i in {0,1}; do
   disk="DISK$i"
   eval DISK${i}=vm-${VMID}-disk-${i}${DISK_EXT:-}
   eval DISK${i}_REF=${STORAGE}:${DISK_REF:-}${!disk}
 done
 msg_ok "Extracted RAW Image and converted to KVM Disk Image"
+
+# Create VM with network card IntelE1000 which is needed by ROCK.
 msg_info "Creating ROCK VM"
 qm create $VMID -agent 1${MACHINE} -tablet 0 -localtime 1 -bios ovmf${CPU_TYPE} -cores $CORE_COUNT -memory $RAM_SIZE \
-  -name $HN -tags proxmox-helper-scripts -net0 virtio,bridge=$BRG,macaddr=$MAC$VLAN$MTU -onboot 1 -ostype l26 -scsihw virtio-scsi-pci
+  -name $HN -tags proxmox-helper-scripts -net0 e1000,bridge=$BRG,macaddr=$MAC$VLAN$MTU -onboot 1 -ostype l26 -scsihw virtio-scsi-pci
 pvesm alloc $STORAGE $VMID $DISK0 4M 1>&/dev/null
 #qm importdisk $VMID ${FILE%.*} $STORAGE ${DISK_IMPORT:-} 1>&/dev/null
 qm importdisk $VMID $FILE $STORAGE ${DISK_IMPORT:-}
@@ -446,6 +454,7 @@ qm set $VMID \
 
   <a href='https://ko-fi.com/D1D7EP4GF'><img src='https://img.shields.io/badge/&#x2615;-Buy me a coffee-blue' /></a>
   </div>" >/dev/null
+
 msg_ok "Created ROCK VM ${CL}${BL}(${HN})"
 if [ "$START_VM" == "yes" ]; then
   msg_info "Starting Roon Optimized Core Kit VM"
