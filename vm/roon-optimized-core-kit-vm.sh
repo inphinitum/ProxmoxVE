@@ -440,9 +440,9 @@ msg_ok "Extracted RAW Image and converted to KVM Disk Image"
 # Create VM with network card IntelE1000 which is needed by ROCK.
 msg_info "Creating ROCK VM"
 
-msg_info "qm create $VMID -agent 1${MACHINE} -tablet 0 -localtime 1 -bios ovmf${CPU_TYPE} -cores $CORE_COUNT -memory $RAM_SIZE -name $HN -tags proxmox-helper-scripts -net0 e1000,bridge=$BRG,macaddr=$MAC$VLAN$MTU -onboot 1 -ostype l26 -scsihw virtio-scsi-pci"
-msg_info "pvesm alloc $STORAGE $VMID $DISK0 4M"
-msg_info "qm set $VMID -efidisk0 ${DISK0_REF}${FORMAT} -scsi0 ${DISK1_REF},${DISK_CACHE}${THIN}size=32G --ide2 $FILE,media=cdrom -boot order=ide2"
+echo "qm create $VMID -agent 1${MACHINE} -tablet 0 -localtime 1 -bios ovmf${CPU_TYPE} -cores $CORE_COUNT -memory $RAM_SIZE -name $HN -tags proxmox-helper-scripts -net0 e1000,bridge=$BRG,macaddr=$MAC$VLAN$MTU -onboot 1 -ostype l26 -scsihw virtio-scsi-pci"
+echo "pvesm alloc $STORAGE $VMID $DISK0 4M"
+echo "qm set $VMID -efidisk0 ${DISK0_REF}${FORMAT} -scsi0 ${DISK1_REF},${DISK_CACHE}${THIN}size=32G --ide2 $FILE,media=cdrom -boot order=ide2"
 
 
 
