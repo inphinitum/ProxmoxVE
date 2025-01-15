@@ -443,11 +443,13 @@ qm create $VMID -agent 1${MACHINE} -tablet 0 -localtime 1 -bios ovmf${CPU_TYPE} 
   -name $HN -tags proxmox-helper-scripts -net0 e1000,bridge=$BRG,macaddr=$MAC$VLAN$MTU -onboot 1 -ostype l26 -scsihw virtio-scsi-pci
 pvesm alloc $STORAGE $VMID $DISK0 4M 1>&/dev/null
 #qm importdisk $VMID ${FILE%.*} $STORAGE ${DISK_IMPORT:-} 1>&/dev/null
-qm importdisk $VMID $FILE $STORAGE ${DISK_IMPORT:-}
+# qm importdisk $VMID $FILE $STORAGE ${DISK_IMPORT:-}
 qm set $VMID \
   -efidisk0 ${DISK0_REF}${FORMAT} \
   -scsi0 ${DISK1_REF},${DISK_CACHE}${THIN}size=32G \
-  -boot order=scsi0 \
+  -usb0 host=bus=1,port=2 \
+  -scsi1 ${STORAGE}:${VMID}/$FILE,media=cdrom \
+  -boot order=usb0 \
   -description "<div align='center'><a href='https://Helper-Scripts.com' target='_blank' rel='noopener noreferrer'><img src='https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/misc/images/logo-81x112.png'/></a>
 
   # Roon Optimized Core Kit
